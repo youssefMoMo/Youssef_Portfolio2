@@ -8,9 +8,8 @@
     <meta name="author" content="Youssef Design">
     <meta name="robots" content="index, follow">
     
-    <!-- Security Meta Tags -->
+    <!-- Security Meta Tags (X-Frame-Options removed - must be set via HTTP header) -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     
@@ -66,7 +65,8 @@
     <!-- Navigation -->
     <nav class="navbar">
         <a href="#home" class="nav-logo" data-page="home">
-            <img src="images/logo.png" alt="Youssef Design" class="logo-avatar" onerror="this.style.display='none'">
+            <!-- Logo with fallback to Font Awesome icon if image missing -->
+            <img src="images/logo.png" alt="Youssef Design" class="logo-avatar" onerror="this.style.display='none'; this.parentNode.classList.add('logo-fallback');">
             <span class="logo-text">Youssef<span>Design</span></span>
         </a>
 
@@ -90,9 +90,7 @@
                 <span data-i18n="commission.status">Commission Open</span>
             </div>
 
-            <button class="music-btn" onclick="MusicPlayer.toggle()" title="Toggle Music">
-                <i class="fas fa-play"></i>
-            </button>
+            <!-- زر الموسيقى تمت إزالته بالكامل -->
 
             <button class="nav-settings" onclick="SettingsModal.open()" title="Settings">
                 <i class="fas fa-cog"></i>
@@ -163,16 +161,6 @@
                     </div>
                 </div>
                 
-                <!-- Volume Section -->
-                <div class="settings-section">
-                    <label><i class="fas fa-volume-up"></i> <span data-i18n="settings.volume">Music Volume</span></label>
-                    <div class="volume-control">
-                        <input type="range" id="volumeSlider" min="0" max="100" value="50" 
-                               oninput="MusicPlayer.setVolume(this.value)">
-                        <span id="volumeValue" class="volume-value">50%</span>
-                    </div>
-                </div>
-                
                 <!-- Animations Toggle -->
                 <div class="settings-section">
                     <label><i class="fas fa-magic"></i> <span data-i18n="settings.animations">Animations</span></label>
@@ -219,10 +207,7 @@
         </div>
     </div>
 
-    <!-- Background Music -->
-    <audio id="bgMusic" loop preload="auto">
-        <source src="audio/music.mp3" type="audio/mpeg">
-    </audio>
+    <!-- تمت إزالة عنصر الصوت background music بالكامل -->
 
     <!-- Scripts -->
     <script src="script.js"></script>
