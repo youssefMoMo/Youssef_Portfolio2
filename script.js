@@ -696,7 +696,7 @@ const Templates = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// GAMES MANAGER
+// GAMES MANAGER (معدل)
 // ═══════════════════════════════════════════════════════════════
 
 const GamesManager = {
@@ -710,7 +710,8 @@ const GamesManager = {
         }
         if (!Security.rateLimiter.canMakeRequest('games')) { this.showError(grid); return; }
         try {
-            const res = await fetch(`https://youssef-portfolio-seven.vercel.app/api/gamesData?ids=${GAME_PLACE_IDS.join(',')}`);
+            // ✅ تم التعديل هنا: استخدام مسار نسبي
+            const res = await fetch(`/api/gamesData?ids=${GAME_PLACE_IDS.join(',')}`);
             const data = await res.json();
             if (data.ok && data.data) { this.renderGames(data.data); if (totalEl) totalEl.textContent = this.formatNumber(data.totalVisits); }
             else this.showError(grid);
