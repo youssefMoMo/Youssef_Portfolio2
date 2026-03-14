@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Youssef Design - Professional Roblox UI/UX Designer. Creating immersive, beautiful game interfaces that players love.">
+    <meta name="keywords" content="Roblox UI, UX Design, Game Interface, Roblox Designer, UI/UX">
+    <meta name="author" content="Youssef Design">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Security Meta Tags -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#000510">
+    <meta name="msapplication-TileColor" content="#000510">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Youssef Design | Professional Roblox UI/UX Designer">
+    <meta property="og:description" content="Creating immersive, beautiful game interfaces that players love.">
+    <meta property="og:site_name" content="Youssef Design">
+    <meta name="twitter:card" content="summary_large_image">
+    
+    <title>Youssef Design | Professional Roblox UI/UX Designer</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="apple-touch-icon" href="images/favicon.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Exo+2:wght@300;400;500;600;700&family=Orbitron:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Page Loader (Fast - 500ms) -->
+    <div class="page-loader" id="pageLoader">
+        <div class="loader-content">
+            <div class="loader-ring"></div>
+            <div class="loader-text">ENTERING GALAXY</div>
+        </div>
+    </div>
+
+    <!-- Cinematic Galaxy Background -->
+    <div class="galaxy-bg">
+        <div class="stars-layer stars-layer-1"></div>
+        <div class="stars-layer stars-layer-2"></div>
+        <div class="stars-layer stars-layer-3"></div>
+        <div class="nebula nebula-1"></div>
+        <div class="nebula nebula-2"></div>
+        <div class="nebula nebula-3"></div>
+        <div class="shooting-stars-container" id="shootingStars"></div>
+        <div class="vignette"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="#home" class="nav-logo" data-page="home">
+            <img src="images/logo.png" alt="Youssef Design" class="logo-avatar" onerror="this.style.display='none'">
+            <span class="logo-text">Youssef<span>Design</span></span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a class="nav-link active" data-page="home" data-i18n="nav.home">Home</a></li>
+            <li><a class="nav-link" data-page="portfolio" data-i18n="nav.portfolio">Portfolio</a></li>
+            <li><a class="nav-link" data-page="games" data-i18n="nav.games">Games</a></li>
+            <li><a class="nav-link" data-page="pricing" data-i18n="nav.pricing">Pricing</a></li>
+            <li><a class="nav-link" data-page="reviews" data-i18n="nav.reviews">Reviews</a></li>
+            <li><a class="nav-link" data-page="policies" data-i18n="nav.policies">Policies</a></li>
+        </ul>
+
+        <div class="nav-right">
+            <div class="nav-time">
+                <i class="fas fa-clock"></i>
+                <span id="alexandriaTime">--:--:--</span>
+            </div>
+            
+            <div class="commission-status">
+                <div class="status-dot"></div>
+                <span data-i18n="commission.status">Commission Open</span>
+            </div>
+
+            <button class="music-btn" onclick="MusicPlayer.toggle()" title="Toggle Music">
+                <i class="fas fa-play"></i>
+            </button>
+
+            <button class="nav-settings" onclick="SettingsModal.open()" title="Settings">
+                <i class="fas fa-cog"></i>
+                <span data-i18n="nav.settings">Settings</span>
+            </button>
+
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay"></div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <ul class="mobile-nav-links">
+            <li><a class="mobile-nav-link active" data-page="home" data-i18n="nav.home">Home</a></li>
+            <li><a class="mobile-nav-link" data-page="portfolio" data-i18n="nav.portfolio">Portfolio</a></li>
+            <li><a class="mobile-nav-link" data-page="games" data-i18n="nav.games">Games</a></li>
+            <li><a class="mobile-nav-link" data-page="pricing" data-i18n="nav.pricing">Pricing</a></li>
+            <li><a class="mobile-nav-link" data-page="reviews" data-i18n="nav.reviews">Reviews</a></li>
+            <li><a class="mobile-nav-link" data-page="policies" data-i18n="nav.policies">Policies</a></li>
+        </ul>
+        
+        <div class="mobile-lang-switcher">
+            <button class="mobile-lang-btn active" data-lang="en">EN</button>
+            <button class="mobile-lang-btn" data-lang="ar">AR</button>
+            <button class="mobile-lang-btn" data-lang="es">ES</button>
+        </div>
+        
+        <div class="mobile-time">
+            <i class="fas fa-clock"></i> <span id="mobileTime">--:--:--</span>
+        </div>
+        
+        <a href="https://discord.gg/youssefdesign" target="_blank" rel="noopener noreferrer" class="mobile-discord-btn">
+            <i class="fab fa-discord"></i>
+            <span>Join Discord</span>
+        </a>
+        
+        <p class="mobile-copyright">© 2025 Youssef Design</p>
+    </div>
+
+    <!-- Main Content -->
+    <main id="mainContent"></main>
+
+    <!-- Settings Modal -->
+    <div class="settings-overlay" id="settingsOverlay">
+        <div class="settings-modal glass-card">
+            <div class="settings-header">
+                <h3><i class="fas fa-cog"></i> <span data-i18n="settings.title">Settings</span></h3>
+                <button class="settings-close" onclick="SettingsModal.close()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="settings-content">
+                <!-- Language Section -->
+                <div class="settings-section">
+                    <label><i class="fas fa-globe"></i> <span data-i18n="settings.language">Language</span></label>
+                    <div class="settings-lang-switcher">
+                        <button class="lang-btn" data-lang="en">English</button>
+                        <button class="lang-btn" data-lang="ar">العربية</button>
+                        <button class="lang-btn" data-lang="es">Español</button>
+                    </div>
+                </div>
+                
+                <!-- Volume Section -->
+                <div class="settings-section">
+                    <label><i class="fas fa-volume-up"></i> <span data-i18n="settings.volume">Music Volume</span></label>
+                    <div class="volume-control">
+                        <input type="range" id="volumeSlider" min="0" max="100" value="50" 
+                               oninput="MusicPlayer.setVolume(this.value)">
+                        <span id="volumeValue" class="volume-value">50%</span>
+                    </div>
+                </div>
+                
+                <!-- Animations Toggle -->
+                <div class="settings-section">
+                    <label><i class="fas fa-magic"></i> <span data-i18n="settings.animations">Animations</span></label>
+                    <div class="settings-toggle-row">
+                        <span class="toggle-label" data-i18n="settings.animationsDesc">Enable animations & transitions</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="animationsToggle" checked 
+                                   onchange="SiteSettings.toggleAnimations(this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Quality Toggle -->
+                <div class="settings-section">
+                    <label><i class="fas fa-gem"></i> <span data-i18n="settings.quality">Enhanced Quality</span></label>
+                    <div class="settings-toggle-row">
+                        <span class="toggle-label" data-i18n="settings.qualityDesc">Higher visual quality</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="qualityToggle" 
+                                   onchange="SiteSettings.toggleQuality(this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Discord Section -->
+                <div class="settings-section">
+                    <label><i class="fab fa-discord"></i> <span data-i18n="settings.contact">Contact</span></label>
+                    <a href="https://discord.gg/youssefdesign" target="_blank" rel="noopener noreferrer" class="settings-discord-btn">
+                        <i class="fab fa-discord"></i>
+                        <span>Join Discord Server</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="settings-footer">
+                <p class="settings-copyright">
+                    © 2025 <span data-i18n="footer.by">Youssef Design</span>
+                    <br>
+                    <span data-i18n="footer.rights">All Rights Reserved</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="audio/music.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
