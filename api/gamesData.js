@@ -1,10 +1,6 @@
-// api/gamesData.js
-// دي فانكشن السيرفر بتاعت Vercel
-// بتاخد ids=<comma separated placeIds>
-// وبتطلع لكل لعبة: الاسم الحقيقي + الزيارات + صورة الثمبنيل
-
+// api/gamesData.js - نسخة محسنة نهائية
 export default async function handler(req, res) {
-  // CORS علشان الفرونت إند يقدر يكلمها من أي دومين
+  // إعداد CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -16,20 +12,26 @@ export default async function handler(req, res) {
 
   const { ids } = req.query || {};
   if (!ids) {
-    res.status(400).json({
+    return res.status(400).json({
       ok: false,
       error: 'No ids query param provided'
     });
-    return;
   }
 
-  // ids من الفرونت = placeIds (الرقم اللي في لينك اللعبة)
+  // تنظيف المدخلات
   const inputIds = ids
     .split(',')
     .map(x => String(x || '').trim())
     .filter(Boolean);
 
-  // helper: placeId -> universeId
+  if (inputIds.length === 0) {
+    return res.status(400).json({
+      ok: false,
+      error: 'No valid place IDs provided'
+    });
+  }
+
+  // دالة تحويل placeId إلى universeId
   async function placeToUniverseId(placeId) {
     try {
       const r = await fetch(
@@ -37,107 +39,88 @@ export default async function handler(req, res) {
       );
       if (!r.ok) return null;
       const j = await r.json();
-      if (j && j.universeId) {
-        return String(j.universeId);
-      }
-      return null;
+      return j?.universeId ? String(j.universeId) : null;
     } catch (e) {
       return null;
     }
   }
 
-  // اربط كل id داخل (inputId, universeId) واحتفظ بالترتيب الأصلي
+  // الحصول على universeIds مع الاحتفاظ بالترتيب
   const rows = [];
   for (const pid of inputIds) {
     let uni = await placeToUniverseId(pid);
-    if (!uni) {
-      // لو API مرجعش حاجة، يمكن الـid اللي مبعوت أصلاً هو universeId
-      uni = pid;
-    }
-    rows.push({
-      inputId: pid,
-      universeId: uni
-    });
+    if (!uni) uni = pid; // افتراض أن الرقم هو universeId إذا فشل
+    rows.push({ inputId: pid, universeId: uni });
   }
 
-  // شيل التكرار عشان مانضربش Roblox كتير
+  // إزالة التكرار
   const uniqueUniverseIds = [...new Set(rows.map(r => r.universeId))];
 
-  // لنجيب معلومات اللعبة + الأيقونات
-  const infoUrl =
-    'https://games.roblox.com/v1/games?universeIds=' +
-    uniqueUniverseIds.join(',');
+  // جلب بيانات الألعاب والأيقونات
+  const infoUrl = `https://games.roblox.com/v1/games?universeIds=${uniqueUniverseIds.join(',')}`;
+  const iconUrl = `https://thumbnails.roblox.com/v1/games/icons?universeIds=${uniqueUniverseIds.join(',')}&size=420x420&format=Png&isCircular=false`;
 
-  const iconUrl =
-    'https://thumbnails.roblox.com/v1/games/icons?universeIds=' +
-    uniqueUniverseIds.join(',') +
-    '&size=420x420&format=Png&isCircular=false';
-
-  let infoJson = { data: [] };
-  let iconJson = { data: [] };
+  let infoData = [];
+  let iconData = [];
 
   try {
     const [infoRes, iconRes] = await Promise.all([
       fetch(infoUrl),
-      fetch(iconUrl),
+      fetch(iconUrl)
     ]);
 
     if (infoRes.ok) {
-      infoJson = await infoRes.json();
+      const infoJson = await infoRes.json();
+      infoData = infoJson.data || [];
     }
     if (iconRes.ok) {
-      iconJson = await iconRes.json();
+      const iconJson = await iconRes.json();
+      iconData = iconJson.data || [];
     }
   } catch (err) {
-    // لو Roblox وقع، نكمّل بس بالداتا اللي قدرنا نجيبها
+    console.error('Roblox API error:', err);
   }
 
-  // نبني map بالـuniverseId
-  const byUni = {};
-  if (Array.isArray(infoJson.data)) {
-    infoJson.data.forEach(g => {
-      byUni[String(g.id)] = {
-        name: g.name,
-        visits: g.visits
-      };
-    });
-  }
+  // بناء خريطة بالبيانات
+  const gameMap = {};
+  infoData.forEach(g => {
+    gameMap[String(g.id)] = {
+      name: g.name || 'Unknown Game',
+      visits: g.visits || 0
+    };
+  });
 
-  if (Array.isArray(iconJson.data)) {
-    iconJson.data.forEach(ic => {
-      const u = String(ic.targetId);
-      if (!byUni[u]) byUni[u] = {};
-      byUni[u].icon = ic.imageUrl;
-    });
-  }
+  iconData.forEach(ic => {
+    const uid = String(ic.targetId);
+    if (!gameMap[uid]) gameMap[uid] = {};
+    gameMap[uid].icon = ic.imageUrl || null;
+  });
 
-  // رجّع الداتا بنفس ترتيب الـinputIds اللي اتبعتت
+  // ترتيب النتائج حسب الإدخال الأصلي
   const outData = rows.map(row => ({
-    inputId: row.inputId,        // ده الـplaceId اللي انت بعته
-    universeId: row.universeId,  // ده اللي Roblox عايزه
-    name: byUni[row.universeId]?.name ?? null,
-    visits: byUni[row.universeId]?.visits ?? null,
-    icon: byUni[row.universeId]?.icon ?? null
+    inputId: row.inputId,
+    universeId: row.universeId,
+    name: gameMap[row.universeId]?.name || null,
+    visits: gameMap[row.universeId]?.visits || null,
+    icon: gameMap[row.universeId]?.icon || null
   }));
 
-  // احسب الـtotalVisits = مجموع الزيارات كلها
-  let totalVisitsBI = 0n;
-  for (const item of outData) {
+  // حساب إجمالي الزيارات
+  let totalVisits = 0n;
+  outData.forEach(item => {
     if (item.visits != null) {
       try {
-        totalVisitsBI += BigInt(item.visits);
-      } catch (e) {
-        // لو visits مش رقم صالح BigInt طنّشه
-      }
+        totalVisits += BigInt(item.visits);
+      } catch (e) { }
     }
-  }
+  });
 
-  // cache خفيفة
+  // تخزين مؤقت
   res.setHeader('Cache-Control', 'public, max-age=20, s-maxage=20');
 
   res.status(200).json({
     ok: true,
     data: outData,
-    totalVisits: totalVisitsBI.toString()
+    totalVisits: totalVisits.toString()
   });
 }

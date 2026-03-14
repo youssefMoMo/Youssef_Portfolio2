@@ -1,4 +1,3 @@
-// script.js - كامل مع التعديلات
 /* ═══════════════════════════════════════════════════════════════
    GALAXY PORTFOLIO v4.0 - Standalone Single Page Application
    Complete JavaScript with Security, i18n, and Optimizations
@@ -696,38 +695,91 @@ const Templates = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// GAMES MANAGER (معدل)
+// GAMES MANAGER (معدل نهائياً)
 // ═══════════════════════════════════════════════════════════════
 
 const GamesManager = {
     async init() {
-        const grid = document.getElementById('gamesGrid'), totalEl = document.getElementById('totalVisitsCount');
+        const grid = document.getElementById('gamesGrid');
+        const totalEl = document.getElementById('totalVisitsCount');
         if (!grid) return;
+
         if (GAME_PLACE_IDS.length === 0) {
             grid.innerHTML = `<div class="no-games-message glass-card" style="grid-column:1/-1;text-align:center;padding:60px 30px"><i class="fas fa-gamepad" style="font-size:3rem;color:var(--primary);margin-bottom:20px;display:block"></i><h3>Games Coming Soon</h3><p style="color:var(--text-muted)">Add Roblox place IDs to display games.</p></div>`;
             if (totalEl) totalEl.textContent = '—';
             return;
         }
-        if (!Security.rateLimiter.canMakeRequest('games')) { this.showError(grid); return; }
+
+        if (!Security.rateLimiter.canMakeRequest('games')) {
+            this.showError(grid);
+            return;
+        }
+
         try {
-            // ✅ تم التعديل هنا: استخدام مسار نسبي
-            const res = await fetch(`/api/gamesData?ids=${GAME_PLACE_IDS.join(',')}`);
+            // الحل النهائي: استخدام window.location.origin لبناء الرابط الكامل
+            const baseUrl = window.location.origin;
+            const url = `${baseUrl}/api/gamesData?ids=${GAME_PLACE_IDS.join(',')}`;
+
+            const res = await fetch(url);
             const data = await res.json();
-            if (data.ok && data.data) { this.renderGames(data.data); if (totalEl) totalEl.textContent = this.formatNumber(data.totalVisits); }
-            else this.showError(grid);
-        } catch { this.showError(grid); }
+
+            if (data.ok && data.data) {
+                this.renderGames(data.data);
+                if (totalEl) totalEl.textContent = this.formatNumber(data.totalVisits);
+            } else {
+                this.showError(grid);
+            }
+        } catch (error) {
+            console.error('Games fetch error:', error);
+            this.showError(grid);
+        }
     },
+
     renderGames(games) {
         const grid = document.getElementById('gamesGrid');
         grid.innerHTML = games.map((g, i) => `
             <div class="game-card glass-card" style="animation-delay:${i * 0.1}s">
-                <div class="game-thumbnail"><a href="https://www.roblox.com/games/${g.inputId}" target="_blank" rel="noopener"><img src="${g.icon || 'https://placehold.co/420x420/0a1628/b5c1dc?text=Game'}" alt="${Security.escapeHtml(g.name)}" loading="lazy" onerror="this.src='https://placehold.co/420x420/0a1628/b5c1dc?text=Game'"></a><div class="game-visits"><i class="fas fa-eye"></i> ${this.formatNumber(g.visits)}</div></div>
-                <div class="game-info"><h3><i class="fas fa-gamepad"></i> ${Security.escapeHtml(g.name) || 'Unknown Game'}</h3><div class="game-stats"><span><i class="fas fa-eye"></i> ${this.formatNumber(g.visits)} ${i18n.translate('games.visits')}</span></div><a href="https://www.roblox.com/games/${g.inputId}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm"><i class="fas fa-play"></i> ${i18n.translate('games.playNow')}</a></div>
+                <div class="game-thumbnail">
+                    <a href="https://www.roblox.com/games/${g.inputId}" target="_blank" rel="noopener">
+                        <img src="${g.icon || 'https://placehold.co/420x420/0a1628/b5c1dc?text=Game'}" 
+                             alt="${Security.escapeHtml(g.name)}" 
+                             loading="lazy" 
+                             onerror="this.src='https://placehold.co/420x420/0a1628/b5c1dc?text=Game'">
+                    </a>
+                    <div class="game-visits">
+                        <i class="fas fa-eye"></i> ${this.formatNumber(g.visits)}
+                    </div>
+                </div>
+                <div class="game-info">
+                    <h3><i class="fas fa-gamepad"></i> ${Security.escapeHtml(g.name) || 'Unknown Game'}</h3>
+                    <div class="game-stats">
+                        <span><i class="fas fa-eye"></i> ${this.formatNumber(g.visits)} ${i18n.translate('games.visits')}</span>
+                    </div>
+                    <a href="https://www.roblox.com/games/${g.inputId}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-play"></i> ${i18n.translate('games.playNow')}
+                    </a>
+                </div>
             </div>
         `).join('');
     },
-    showError(grid) { grid.innerHTML = `<div class="error-message glass-card" style="grid-column:1/-1;text-align:center;padding:40px"><i class="fas fa-exclamation-triangle" style="font-size:2rem;color:#ef4444;margin-bottom:15px;display:block"></i><h3>Unable to load games</h3></div>`; },
-    formatNumber(n) { if (!n) return '—'; const num = Number(n); if (isNaN(num)) return '—'; if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B'; if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M'; if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K'; return num.toLocaleString(); }
+
+    showError(grid) {
+        grid.innerHTML = `<div class="error-message glass-card" style="grid-column:1/-1;text-align:center;padding:40px">
+            <i class="fas fa-exclamation-triangle" style="font-size:2rem;color:#ef4444;margin-bottom:15px;display:block"></i>
+            <h3>Unable to load games</h3>
+            <p style="color:var(--text-muted);margin-top:10px">Please check your connection or try again later.</p>
+        </div>`;
+    },
+
+    formatNumber(n) {
+        if (!n) return '—';
+        const num = Number(n);
+        if (isNaN(num)) return '—';
+        if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';
+        if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
+        if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+        return num.toLocaleString();
+    }
 };
 
 // ═══════════════════════════════════════════════════════════════
