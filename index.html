@@ -8,7 +8,7 @@
     <meta name="author" content="Youssef Design">
     <meta name="robots" content="index, follow">
     
-    <!-- Security Meta Tags -->
+    <!-- Security Meta Tags (X-Frame-Options removed - set via HTTP header) -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
     <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -65,7 +65,8 @@
     <!-- Navigation -->
     <nav class="navbar">
         <a href="#home" class="nav-logo" data-page="home">
-            <img src="images/logo.png" alt="Youssef Design" class="logo-avatar" onerror="this.style.display='none'; this.parentNode.classList.add('logo-fallback');">
+            <!-- Logo fallback -->
+            <img src="images/logo.png" alt="Youssef Design" class="logo-avatar" onerror="this.style.display='none'; this.parentElement.style.paddingLeft='0';">
             <span class="logo-text">Youssef<span>Design</span></span>
         </a>
 
